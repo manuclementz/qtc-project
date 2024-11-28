@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "qtc-project"
+version = "0.1.0"
+description = "A collection of web apps, just for fun"
+authors = ["Manu Clementz <manu.clementz@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.2"
+django-admin-sortable2 = "^2.1.8"
+shortuuid = "^1.0.11"
+django-markdownfield = "^0.10.0"
+pillow = "^10.4.0"
+markdown = "^3.7"
+django-extensions = "^3.2.3"
+django-markdownify = "^0.9.5"
+django-compressor = "^4.5.1"
+django-browser-reload = "^1.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,75 @@
+{% extends display_options.base_template %}
+{{ display_options.base_template }}
+{% load humanize %}
+{% block content %}
+
+<div>
+  <div id="app-container">
+    <hgroup class="center-text">
+    <h2>{{ quiz.quiz_title }}</h2>
+    <h3>
+      {% if quiz.is_running %}
+      Le quiz se termine le {{quiz.end_datetime | date}} à {{ quiz.end_datetime | time}}.
+      {% else %}
+      Ce quiz est terminé ou n'a pas encore démarré.
+      {% endif %}
+    </h3>
+    </hgroup>
+    <article>
+    <form hx-post="{% url 'qtc_save_entry' quiz.quiz_url_id entry.unique_id %}" hx-target="#response-content"
+      hx-indicator="#loading-ind" hx-ext="disable-element" hx-disable-element="#save-btn">
+      {% csrf_token %}
+      <div class="qtc-grid">
+        {% for answer in entry.entry_answers.all %}
+        <div class="qtc-grid-item">
+          <!-- Hidden input for storing the value -->
+          <input type="hidden" id="hidden-{{ answer.question.id }}" name="answer-{{ answer.id }}"
+            value="{{ answer.answer_text }}" />
+
+          <!-- Number overlay -->
+          <div class="image-number">
+            {% if not display_options.special %}{{ answer.question.question_order|stringformat:"02d" }}{% endif %}
+          </div>
+
+          <!-- Editable overlay -->
+          <div {% if quiz.is_running %}contenteditable="true" {% endif %}
+            onkeyup="document.getElementById('hidden-{{ answer.question.id }}').value=event.target.innerText.trim();"
+            id="editable-{{ answer.question.id }}" placeholder="...">
+            {{ answer.answer_text }}
+          </div>
+
+          <!-- Image -->
+          <img src="{{ answer.question.file.url }}"
+            onclick="document.getElementById('editable-{{ answer.question.id }}').focus();" />
+        </div>
+        {% endfor %}
+      </div>
+  </div>
+  {% if quiz.is_running %}
+  <div>
+    <label for="player_name"><span {{display_options.special|yesno:'text-yellow-300,t'}}>Sous quel pseudo te connaît-on
+        ?</span></label>
+    <input required="required" type="text" id="player-name-input" name="player_name" value="{{ entry.player_name }}"
+      placeholder="d4rk_Naruto666, par exemple" required />
+  </div>
+  <div>
+    <div id="response-content" style=""></div>
+  </div>
+  <div>
+    <button type="submit" id="save-btn">
+      <span id="loading-ind">
+      </span>Enregistrer mes réponses de qualité</button>
+  </div>
+  {%endif%}
+  </form>
+  </article>
+</div>
+</div>
+
+<style>
+  .question img {
+    aspect-ratio: 1;
+    object-fit: contain;
+  }
+</style>
+{% endblock %}
