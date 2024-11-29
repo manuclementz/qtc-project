@@ -1,49 +1,54 @@
 {% extends display_options.base_template %}
 {{ display_options.base_template }}
-{% load humanize %}
+{% load humanize static %}
 {% block content %}
-
+<div id="artwork">
+  <div id="gradient"></div>
+  <div class="">
+    <img style="width:100vw" id="artwork--res" src="{% static 'img/darkstalkers_stage.gif' %}">
+  </div>
+</div>
 <div>
+  <article>
   <div id="app-container">
-    <hgroup class="center-text">
-    <h2>{{ quiz.quiz_title }}</h2>
-    <h3>
-      {% if quiz.is_running %}
-      Le quiz se termine le {{quiz.end_datetime | date}} à {{ quiz.end_datetime | time}}.
-      {% else %}
-      Ce quiz est terminé ou n'a pas encore démarré.
-      {% endif %}
-    </h3>
-    </hgroup>
-    <article>
-    <form hx-post="{% url 'qtc_save_entry' quiz.quiz_url_id entry.unique_id %}" hx-target="#response-content"
-      hx-indicator="#loading-ind" hx-ext="disable-element" hx-disable-element="#save-btn">
-      {% csrf_token %}
-      <div class="qtc-grid">
-        {% for answer in entry.entry_answers.all %}
-        <div class="qtc-grid-item">
-          <!-- Hidden input for storing the value -->
-          <input type="hidden" id="hidden-{{ answer.question.id }}" name="answer-{{ answer.id }}"
-            value="{{ answer.answer_text }}" />
+      <hgroup class="center-text">
+        <h2>{{ quiz.quiz_title }}</h2>
+        <h3>
+          {% if quiz.is_running %}
+          Le quiz se termine le {{quiz.end_datetime | date}} à {{ quiz.end_datetime | time}}.
+          {% else %}
+          Ce quiz est terminé ou n'a pas encore démarré.
+          {% endif %}
+        </h3>
+      </hgroup>
+      <form hx-post="{% url 'qtc_save_entry' quiz.quiz_url_id entry.unique_id %}" hx-target="#response-content"
+        hx-indicator="#loading-ind" hx-ext="disable-element" hx-disable-element="#save-btn">
+        {% csrf_token %}
+        <div class="qtc-grid">
+          {% for answer in entry.entry_answers.all %}
+          <div class="qtc-grid-item">
+            <!-- Hidden input for storing the value -->
+            <input type="hidden" id="hidden-{{ answer.question.id }}" name="answer-{{ answer.id }}"
+              value="{{ answer.answer_text }}" />
 
-          <!-- Number overlay -->
-          <div class="image-number">
-            {% if not display_options.special %}{{ answer.question.question_order|stringformat:"02d" }}{% endif %}
+            <!-- Number overlay -->
+            <div class="image-number">
+              {% if not display_options.special %}{{ answer.question.question_order|stringformat:"02d" }}{% endif %}
+            </div>
+
+            <!-- Editable overlay -->
+            <div {% if quiz.is_running %}contenteditable="true" {% endif %}
+              onkeyup="document.getElementById('hidden-{{ answer.question.id }}').value=event.target.innerText.trim();"
+              id="editable-{{ answer.question.id }}" placeholder="...">
+              {{ answer.answer_text }}
+            </div>
+
+            <!-- Image -->
+            <img src="{{ answer.question.file.url }}"
+              onclick="document.getElementById('editable-{{ answer.question.id }}').focus();" />
           </div>
-
-          <!-- Editable overlay -->
-          <div {% if quiz.is_running %}contenteditable="true" {% endif %}
-            onkeyup="document.getElementById('hidden-{{ answer.question.id }}').value=event.target.innerText.trim();"
-            id="editable-{{ answer.question.id }}" placeholder="...">
-            {{ answer.answer_text }}
-          </div>
-
-          <!-- Image -->
-          <img src="{{ answer.question.file.url }}"
-            onclick="document.getElementById('editable-{{ answer.question.id }}').focus();" />
+          {% endfor %}
         </div>
-        {% endfor %}
-      </div>
   </div>
   {% if quiz.is_running %}
   <div>
@@ -62,10 +67,10 @@
   </div>
   {%endif%}
   </form>
-  </article>
 </div>
 </div>
 
+</article>
 <style>
   .question img {
     aspect-ratio: 1;

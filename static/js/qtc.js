@@ -4,6 +4,7 @@ function setupSnowflakes() {
     var sky = document.querySelector('body')
     var canvas = document.createElement('canvas')
     canvas.style = 'pointer-events:none';
+    canvas.style.zIndex = -1;
     var ctx = canvas.getContext('2d')
     var width = sky.clientWidth
     var height = Math.max(document.body.scrollHeight, document.body.offsetHeight,
