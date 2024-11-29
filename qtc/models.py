@@ -38,6 +38,7 @@ class Quiz(models.Model):
     quiz_media = models.FileField(upload_to=upload_path, null=True)
     squarish_images = models.BooleanField(null=True)
 
+    @property
     def is_running(self):
         return self.start_datetime < timezone.now() < self.end_datetime
 

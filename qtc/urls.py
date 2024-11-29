@@ -9,4 +9,5 @@ urlpatterns = [
     path('<slug:quizid>/', views.qtc_view, name="qtc_view"),
     path('<slug:quizid>/<str:entryid>/', views.qtc_view_entry, name="qtc_view_entry"),
     path('save/<slug:quizid>/<str:entryid>/', views.qtc_save_entry, name="qtc_save_entry"),
+    path('', views.qtc_home, name='qtc_home'),
 ] 

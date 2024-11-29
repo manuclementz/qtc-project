@@ -2,16 +2,23 @@ from django.shortcuts import render, redirect
 from django.http.response import HttpResponse
 from django.http import HttpResponseNotFound
 from django.urls import reverse
-from .models import *
+from .models import Quiz, QuizEntry, QuizEntryAnswer
 import shortuuid
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.html import strip_tags
+from django.utils import timezone
 
 
-# Create your views here.
 def qtc_home(request):
-    quizzes = Quiz.objects.all()
-    return render(request, 'qtc-main.html', {"quizzes":quizzes}) 
+    current_datetime = timezone.now()
+    quiz = Quiz.objects.filter(
+        start_datetime__lte=current_datetime, 
+        end_datetime__gte=current_datetime
+    ).first()
+    if not quiz:
+        return render(request, 'no-qtc.html')
+    return redirect('qtc_view', quizid=quiz.quiz_url_id)
+
 
 def qtc_view(request, quizid):
     quiz = Quiz.objects.get(quiz_url_id=quizid)
