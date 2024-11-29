@@ -1,6 +1,6 @@
 function setupSnowflakes() {
     var particleCount = 500
-    var particleMax = 1000
+    var particleMax = 2000
     var sky = document.querySelector('body')
     var canvas = document.createElement('canvas')
     canvas.style = 'pointer-events:none';

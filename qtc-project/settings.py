@@ -12,21 +12,24 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+EXEC_ENV = config('EXEC_ENV')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7qbe6*f5!0a58s+=p5s^e_0%27d_fecn%0^e#wcu=^39c=t64m'
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-7qbe6*f5!0a58s+=p5s^e_0%27d_fecn%0^e#wcu=^39c=t64m')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='localhost').split(' ')
 
 
 # Application definition
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,11 +87,9 @@ WSGI_APPLICATION = 'qtc-project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default':config('DATABASE_URL', default=default_dburl, cast=dj_database_url.parse),
 }
 
 
@@ -154,7 +156,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
-SITE_URL = "https://example.com"
+SITE_URL = "https://qtc.chiktabb.app"
 
 MARKDOWNIFY = {
     "default": {
@@ -174,3 +176,11 @@ MARKDOWNIFY = {
         ]
     }
 }
+
+
+if EXEC_ENV == 'PROD':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT=True
+    SESSION_COOKIE_SECURE=True
+    CSRF_COOKIE_SECURE=True
+    USE_X_FORWARDED_HOST=True 

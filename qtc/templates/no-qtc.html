@@ -1,8 +1,12 @@
-{% extends display_options.base_template %}
+{% extends 'base.html' %}
 {{ display_options.base_template }}
 {% load humanize static %}
 {% block content %}
+<article class="center-text" style="min-height:75vh;display:flex;flex-direction: column;justify-content: center;" >
+<hgroup>
 <h2>Oui bonjour.</h2>
 <h3>Aucun QTC n'est actuellement en cours.</h3>
 <p>Reviens prochainement, ça aura peut-être changé.</p>
+</hgroup>
+</article>
 {% endblock %}

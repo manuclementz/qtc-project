@@ -1,0 +1,34 @@
+services:
+  qtc-project:
+    image: qtc-project
+    env_file:
+      - .env
+    volumes:
+      - ~/data/qtc-project/media:/app/media
+      - ~/data/qtc-project/static:/app/staticfiles
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 127.0.0.1:8002:8000
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+  postgresdb:
+    image: postgres:16
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+volumes:
+  postgres_data:
