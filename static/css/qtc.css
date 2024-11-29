@@ -12,7 +12,9 @@ footer {
     border-top : 2px solid var(--pico-primary);
 }
 
-
+body {
+    min-height:100vh;
+}
 
 /* Grid Container */
 .qtc-grid {

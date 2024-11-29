@@ -2,11 +2,27 @@
 {{ display_options.base_template }}
 {% load humanize static %}
 {% block content %}
-<article class="center-text" style="min-height:75vh;display:flex;flex-direction: column;justify-content: center;" >
+<div id="artwork">
+    <div id="gradient"></div>
+    <div class="">        
+            <img style="width:100vw" id="artwork--res" src="{% static background_img_url %}">        
+    </div>
+  </div>
+<div id="noqtcontainer" style="display:flex;flex-direction:column;height:100% !important;">
+<article class="center-text" style="flex:1;display:flex;flex-direction: column;justify-content: center;" >
 <hgroup>
 <h2>Oui bonjour.</h2>
 <h3>Aucun QTC n'est actuellement en cours.</h3>
 <p>Reviens prochainement, ça aura peut-être changé.</p>
 </hgroup>
 </article>
+<footer class="container" style="height:fit-content">
+    <hgroup>
+    <p class="center-text"><small>🎄 Bonnes fêtes de fin d'année à toutes et à tous ! 🎅</small></p>
+    <p class="center-text"><small>Fabriqué artisanalement et avec ♥ par Chiktabba et ses gros doigts boudinés.</small></p>        
+  </hgroup>
+  </footer>
+</div>
+{% block footer %}
+{% endblock %}
 {% endblock %}

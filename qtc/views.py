@@ -7,7 +7,7 @@ import shortuuid
 from django.views.decorators.http import require_POST, require_GET
 from django.utils.html import strip_tags
 from django.utils import timezone
-
+import random
 
 def qtc_home(request):
     current_datetime = timezone.now()
@@ -16,7 +16,8 @@ def qtc_home(request):
         end_datetime__gte=current_datetime
     ).first()
     if not quiz:
-        return render(request, 'no-qtc.html')
+        backgrounds = ["img/sf3_stage_snowy_ny.gif", "img/darkstalkers_stage.gif", "img/lastblade_snowy_stage.gif"]            
+        return render(request, 'no-qtc.html', context = { 'background_img_url': random.choice(backgrounds)} )
     return redirect('qtc_view', quizid=quiz.quiz_url_id)
 
 
