@@ -1,4 +1,4 @@
-{% load static %}
+{% load static compress %}
 <!DOCTYPE html>
 <html data-theme="dark" lang="fr">
 
@@ -31,8 +31,10 @@
       </hgroup>
       </footer>
     {% endblock %}
+    {% compress js %}
       <script src="{% static 'js/htmx.js' %}"></script>
       <script src="{% static 'js/qtc.js' %}"></script>
+    {% endcompress %}
 </body>
 
 </html>
