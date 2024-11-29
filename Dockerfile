@@ -24,7 +24,6 @@ WORKDIR /app
 COPY . /app
 
 # Copy entrypoint script and set permissions BEFORE changing user
-COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Creates a non-root user with an explicit UID and adds permission to access the /app folder
