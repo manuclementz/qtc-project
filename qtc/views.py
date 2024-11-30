@@ -16,7 +16,8 @@ def qtc_home(request):
     current_datetime = timezone.now()
     quiz = Quiz.objects.filter(
         start_datetime__lte=current_datetime, 
-        end_datetime__gte=current_datetime
+        end_datetime__gte=current_datetime,
+        is_published = True
     ).first()
     if not quiz:
         return render(request, 'no-qtc.html', context = { 'background_img_url': random.choice(backgrounds)} )
@@ -24,7 +25,7 @@ def qtc_home(request):
 
 
 def qtc_view(request, quizid):
-    quiz = Quiz.objects.get(quiz_url_id=quizid, is_published=True)
+    quiz = Quiz.objects.filter(quiz_url_id=quizid, is_published=True).first()
     if quiz is None:
         return redirect('qtc_home')
     session_entry = request.session.get(f'qtc-{quiz.pk}')
