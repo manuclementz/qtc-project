@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.utils.html import strip_tags
 from django.utils import timezone
 import random
+import datetime
 
 backgrounds = ["img/sf3_stage_snowy_ny.gif", "img/darkstalkers_stage.gif", "img/lastblade_snowy_stage.gif"]            
 
@@ -56,7 +57,9 @@ def qtc_view_entry(request, quizid, entryid):
     request.session[f'qtc-{quiz.pk}'] = entryid
     request.session.set_expiry(3600*24*30)
     entry = QuizEntry.objects.get(unique_id=entryid)
-    return render(request, 'qtc.html', {'quiz': quiz, 'entry': entry, 'display_options':display_options, 'background_img_url': random.choice(backgrounds)} )
+    current_day = datetime.datetime.today().day
+    
+    return render(request, 'qtc.html', {'quiz': quiz, 'entry': entry, 'display_options':display_options, 'background_img_url': random.choice(backgrounds), 'current_day':current_day} )
 
 @require_POST
 def qtc_save_entry(request, quizid, entryid):

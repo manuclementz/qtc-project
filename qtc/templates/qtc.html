@@ -33,7 +33,7 @@
         <div class="qtc-grid">
           {% for answer in entry.entry_answers.all %}
           <div class="qtc-grid-item" data-day="{{ answer.question.question_order }}">
-            {% if answer.question.question_order <= 12 %}
+            {% if answer.question.question_order <= current_day %}
               <!-- Real image for past/current days -->
               <img 
                 src="/static/img/advent/image_{{answer.question.question_order|stringformat:"02d" }}.png" 
@@ -47,7 +47,7 @@
               id="editable-{{ answer.question.question_order }}" 
               {% if quiz.is_running %}contenteditable="true"{% endif %} 
               onkeyup="document.getElementById('hidden-{{ answer.question.question_order }}').value=event.target.innerText.trim();" 
-              class="editable-overlay">
+              class="editable-overlay editable-hidden">
               {{ answer.answer_text }}
             </div>
             <input 
@@ -118,70 +118,62 @@
     cursor: not-allowed;
     opacity: 0.5;
   }
+
+  .editable-hidden {
+    display:none;
+    opacity:0;
+  }
+  
 </style>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const revealedDays = JSON.parse(localStorage.getItem("revealedDays")) || [];
 
-    revealedDays.forEach((day) => {
-      const img = document.querySelector(`.qtc-grid-item[data-day="${day}"] img`);
-      if (img) {
-        img.dataset.revealed = "revealing";
-        setTimeout(() => {
-          img.onclick = null;
-          img.src = img.dataset.actualSrc; // Switch the image after fading out
-          img.dataset.revealed = "true"; // Reset for appearance
-          img.onclick = () => {
-          const editableOverlay = document.getElementById(`editable-${day}`);
-            if (editableOverlay) editableOverlay.focus();
-          };
-        }, 500); // Matches the CSS transition duration
-      }
-    });
-  });
-
-  function revealImage(imgElement, day) {
+function revealImage(imgElement, day) {
     if (imgElement.dataset.revealed === "true") {
       const editableOverlay = document.getElementById(`editable-${day}`);
       if (editableOverlay) editableOverlay.focus();
       return;
     } // Already revealed
 
-    // Fade out the image
     imgElement.dataset.revealed = "revealing";
 
     setTimeout(() => {
- // Create a temporary image element to preload the actual image
  const newImage = new Image();
   newImage.src = imgElement.dataset.actualSrc;
 
   newImage.onload = () => {
-    // Once the new image is loaded, switch the source of the image
     imgElement.src = newImage.src;
 
-    // Fade back in the image by updating opacity
     imgElement.style.transition = "opacity 0.5s ease-in-out";
-    imgElement.style.opacity = 1; // Ensure it's visible
+    imgElement.style.opacity = 1; 
 
-    // Remove the fade-out class after the image is loaded
     imgElement.dataset.revealed = "true";
-
-    // Update click event to focus editable-overlay
+    const editableOverlay = document.getElementById(`editable-${day}`);
+    editableOverlay.classList.remove('editable-hidden');
     imgElement.onclick = () => {
       const editableOverlay = document.getElementById(`editable-${day}`);
       if (editableOverlay) editableOverlay.focus();
     };
   };
 
-  // Fade-out the image initially
   imgElement.style.transition = "opacity 0.5s ease-in-out";
   imgElement.style.opacity = 0;
     }, 500); // Matches the CSS transition duration
 
-    // Save revealed state to localStorage
     const revealedDays = JSON.parse(localStorage.getItem("revealedDays")) || [];
     if (!revealedDays.includes(day)) revealedDays.push(day);
     localStorage.setItem("revealedDays", JSON.stringify(revealedDays));
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+
+    const revealedDays = JSON.parse(localStorage.getItem("revealedDays")) || [];
+
+    revealedDays.forEach((day) => {
+      const img = document.querySelector(`.qtc-grid-item[data-day="${day}"] img`);
+      setTimeout(() => revealImage(img, day), 100*day);
+    });
+  });
+
 </script>
 {% endblock %}
