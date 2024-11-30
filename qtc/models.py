@@ -37,6 +37,7 @@ class Quiz(models.Model):
     end_datetime = models.DateTimeField()
     quiz_media = models.FileField(upload_to=upload_path, null=True)
     squarish_images = models.BooleanField(null=True)
+    is_published = models.BooleanField(default=False)
 
     @property
     def is_running(self):

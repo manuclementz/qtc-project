@@ -24,7 +24,7 @@ def qtc_home(request):
 
 
 def qtc_view(request, quizid):
-    quiz = Quiz.objects.get(quiz_url_id=quizid)
+    quiz = Quiz.objects.get(quiz_url_id=quizid, is_published=True)
     if quiz is None:
         return HttpResponseNotFound()
     session_entry = request.session.get(f'qtc-{quiz.pk}')
