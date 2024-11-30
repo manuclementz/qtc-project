@@ -26,7 +26,7 @@ def qtc_home(request):
 def qtc_view(request, quizid):
     quiz = Quiz.objects.get(quiz_url_id=quizid, is_published=True)
     if quiz is None:
-        return HttpResponseNotFound()
+        return redirect('qtc_home')
     session_entry = request.session.get(f'qtc-{quiz.pk}')
     if session_entry:
         return redirect('qtc_view_entry', quizid=quizid, entryid=session_entry)
