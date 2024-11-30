@@ -1,80 +1,187 @@
-{% extends display_options.base_template %}
-{{ display_options.base_template }}
-{% load humanize static %}
+{% extends 'base.html' %}
 {% block content %}
+{% load static %}
+
 <div id="artwork">
   <div id="gradient"></div>
-  <div class="">
-    <img style="width:100vw" id="artwork--res" src="{% static 'img/darkstalkers_stage.gif' %}">
+  <div>
+    <img style="width:100vw" id="artwork--res" src="{% static background_img_url %}">
   </div>
 </div>
 <div>
   <article>
-  <div id="app-container">
+    <div id="app-container">
       <hgroup class="center-text">
         <h2>{{ quiz.quiz_title }}</h2>
         <h3>
           {% if quiz.is_running %}
-          Le quiz se termine le {{quiz.end_datetime | date}} à {{ quiz.end_datetime | time}}.
+            Le quiz se termine le {{ quiz.end_datetime|date }} à {{ quiz.end_datetime|time }}.
           {% else %}
-          Ce quiz est terminé ou n'a pas encore démarré.
+            Ce quiz est terminé ou n'a pas encore démarré.
           {% endif %}
         </h3>
       </hgroup>
-      <form hx-post="{% url 'qtc_save_entry' quiz.quiz_url_id entry.unique_id %}" hx-target="#response-content"
-        hx-indicator="#loading-ind" hx-ext="disable-element" hx-disable-element="#save-btn">
+
+      <form hx-post="{% url 'qtc_save_entry' quiz.quiz_url_id entry.unique_id %}" 
+            hx-target="#response-content" 
+            hx-indicator="#loading-ind" 
+            hx-ext="disable-element" 
+            hx-disable-element="#save-btn">
         {% csrf_token %}
+
+        <!-- Advent Calendar Grid -->
         <div class="qtc-grid">
           {% for answer in entry.entry_answers.all %}
-          <div class="qtc-grid-item">
-            <!-- Hidden input for storing the value -->
-            <input type="hidden" id="hidden-{{ answer.question.id }}" name="answer-{{ answer.id }}"
-              value="{{ answer.answer_text }}" />
-
-            <!-- Number overlay -->
-            <div class="image-number">
-              {% if not display_options.special %}{{ answer.question.question_order|stringformat:"02d" }}{% endif %}
-            </div>
-
-            <!-- Editable overlay -->
-            <div {% if quiz.is_running %}contenteditable="true" {% endif %}
-              onkeyup="document.getElementById('hidden-{{ answer.question.id }}').value=event.target.innerText.trim();"
-              id="editable-{{ answer.question.id }}" placeholder="...">
+          <div class="qtc-grid-item" data-day="{{ answer.question.question_order }}">
+            {% if answer.question.question_order <= 12 %}
+              <!-- Real image for past/current days -->
+              <img 
+                src="/static/img/advent/image_{{answer.question.question_order|stringformat:"02d" }}.png" 
+                data-actual-src="{{ answer.question.file.url }}" 
+                class="revealable" 
+                data-revealed="false" 
+                alt="Jour {{ answer.question.question_order }}"
+                onclick="revealImage(this, {{ answer.question.question_order }})" 
+              />
+              <div 
+              id="editable-{{ answer.question.question_order }}" 
+              {% if quiz.is_running %}contenteditable="true"{% endif %} 
+              onkeyup="document.getElementById('hidden-{{ answer.question.question_order }}').value=event.target.innerText.trim();" 
+              class="editable-overlay">
               {{ answer.answer_text }}
             </div>
-
-            <!-- Image -->
-            <img src="{{ answer.question.file.url }}"
-              onclick="document.getElementById('editable-{{ answer.question.id }}').focus();" />
+            <input 
+              type="hidden" 
+              id="hidden-{{ answer.question.question_order }}" 
+              name="answer-{{ answer.id }}" 
+              value="{{ answer.answer_text }}" 
+            />
+            {% else %}
+              <!-- Placeholder for future days -->
+              <img 
+                src="/static/img/advent/image_{{answer.question.question_order|stringformat:"02d" }}.png" 
+                class="placeholder" 
+                alt="Jour {{ answer.question.question_order }}" 
+              />
+            {% endif %}
           </div>
           {% endfor %}
         </div>
-  </div>
-  {% if quiz.is_running %}
-  <div>
-    <label for="player_name"><span {{display_options.special|yesno:'text-yellow-300,t'}}>Sous quel pseudo te connaît-on
-        ?</span></label>
-    <input required="required" type="text" id="player-name-input" name="player_name" value="{{ entry.player_name }}"
-      placeholder="d4rk_Naruto666, par exemple" required />
-  </div>
-  <div>
-    <div id="response-content" style=""></div>
-  </div>
-  <div>
-    <button type="submit" id="save-btn">
-      <span id="loading-ind">
-      </span>Enregistrer mes réponses de qualité</button>
-  </div>
-  {%endif%}
-  </form>
-</div>
+
+        <!-- Existing Input for Player Name -->
+        {% if quiz.is_running %}
+        <div>
+          <label for="player_name"><span>Sous quel pseudo te connaît-on ?</span></label>
+          <input 
+            required="required" 
+            type="text" 
+            id="player-name-input" 
+            name="player_name" 
+            value="{{ entry.player_name }}" 
+            placeholder="d4rk_Naruto666, par exemple" 
+            required 
+          />
+        </div>
+        <div>
+          <div id="response-content" style=""></div>
+        </div>
+        <div>
+          <button type="submit" id="save-btn">
+            <span id="loading-ind"></span>Enregistrer mes réponses de qualité
+          </button>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+  </article>
 </div>
 
-</article>
 <style>
-  .question img {
-    aspect-ratio: 1;
-    object-fit: contain;
+  .qtc-grid-item img.revealable {
+    cursor: pointer;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .qtc-grid-item img.revealable[data-revealed="false"] {
+    opacity: 1;
+  }
+
+  .qtc-grid-item img.revealable[data-revealed="true"] {
+    opacity: 1; /* Fade out before switching */
+  }
+
+  .qtc-grid-item img.revealable[data-revealed="revealing"] {
+    opacity: 0; /* Fade out before switching */
+  }
+  .qtc-grid-item img.placeholder {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 </style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const revealedDays = JSON.parse(localStorage.getItem("revealedDays")) || [];
+
+    revealedDays.forEach((day) => {
+      const img = document.querySelector(`.qtc-grid-item[data-day="${day}"] img`);
+      if (img) {
+        img.dataset.revealed = "revealing";
+        setTimeout(() => {
+          img.onclick = null;
+          img.src = img.dataset.actualSrc; // Switch the image after fading out
+          img.dataset.revealed = "true"; // Reset for appearance
+          img.onclick = () => {
+          const editableOverlay = document.getElementById(`editable-${day}`);
+            if (editableOverlay) editableOverlay.focus();
+          };
+        }, 500); // Matches the CSS transition duration
+      }
+    });
+  });
+
+  function revealImage(imgElement, day) {
+    if (imgElement.dataset.revealed === "true") {
+      const editableOverlay = document.getElementById(`editable-${day}`);
+      if (editableOverlay) editableOverlay.focus();
+      return;
+    } // Already revealed
+
+    // Fade out the image
+    imgElement.dataset.revealed = "revealing";
+
+    setTimeout(() => {
+ // Create a temporary image element to preload the actual image
+ const newImage = new Image();
+  newImage.src = imgElement.dataset.actualSrc;
+
+  newImage.onload = () => {
+    // Once the new image is loaded, switch the source of the image
+    imgElement.src = newImage.src;
+
+    // Fade back in the image by updating opacity
+    imgElement.style.transition = "opacity 0.5s ease-in-out";
+    imgElement.style.opacity = 1; // Ensure it's visible
+
+    // Remove the fade-out class after the image is loaded
+    imgElement.dataset.revealed = "true";
+
+    // Update click event to focus editable-overlay
+    imgElement.onclick = () => {
+      const editableOverlay = document.getElementById(`editable-${day}`);
+      if (editableOverlay) editableOverlay.focus();
+    };
+  };
+
+  // Fade-out the image initially
+  imgElement.style.transition = "opacity 0.5s ease-in-out";
+  imgElement.style.opacity = 0;
+    }, 500); // Matches the CSS transition duration
+
+    // Save revealed state to localStorage
+    const revealedDays = JSON.parse(localStorage.getItem("revealedDays")) || [];
+    if (!revealedDays.includes(day)) revealedDays.push(day);
+    localStorage.setItem("revealedDays", JSON.stringify(revealedDays));
+  }
+</script>
 {% endblock %}
