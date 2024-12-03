@@ -32,7 +32,7 @@
         <!-- Advent Calendar Grid -->
         <div class="qtc-grid">
           {% for answer in entry.entry_answers.all %}
-          <div class="qtc-grid-item" data-day="{{ answer.question.question_order }}">
+          <div class="qtc-grid-item order-{{answer.question.question_order}}" data-day="{{ answer.question.question_order }}">
             {% if answer.question.question_order <= current_day %}
               <!-- Real image for past/current days -->
               <img 
