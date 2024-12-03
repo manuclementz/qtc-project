@@ -115,4 +115,4 @@ class QuizEntryAnswer(models.Model):
     question = models.ForeignKey(Question, models.CASCADE, related_name='question_answers')
     entry = models.ForeignKey(QuizEntry, models.CASCADE, related_name='entry_answers')
     def __str__(self):
-        return f"{self.entry.player_name} - {self.question.question_order} {self.question.question_text}"
+        return f"{self.entry.player_name} - {self.question.question_order} {self.answer_text}"
