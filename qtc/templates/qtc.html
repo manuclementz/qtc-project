@@ -45,7 +45,7 @@
               />
               <div 
               id="editable-{{ answer.question.question_order }}" 
-              {% if quiz.is_running %}contenteditable="true"{% endif %} 
+              {% if quiz.is_running %}contenteditable="true"{% endif %} spellcheck="false"
               onkeyup="document.getElementById('hidden-{{ answer.question.question_order }}').value=event.target.innerText.trim();" 
               class="editable-overlay editable-hidden">
               {{ answer.answer_text }}

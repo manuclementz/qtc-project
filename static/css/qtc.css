@@ -89,16 +89,16 @@ article {
     padding: 0.5rem;
     background: transparent; /* Transparent by default */
     color: #fff; /* White text */
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); /* Text shadow for readability */
-    font-size: 1rem;
+    text-shadow: #000 1px 0 10px;
+    font-size: 1.25rem;
     font-weight: bold;
     outline: none;
     cursor: text;
-    text-align: center;
     overflow-y: auto; /* Scroll if content exceeds max height */
     transition: background 0.3s ease-in-out; /* Smooth background transition */
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    text-align: center;
 }
 
 /* Visible background when focused */
