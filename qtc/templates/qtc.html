@@ -32,13 +32,7 @@
         <!-- Advent Calendar Grid -->
         <div class="qtc-grid">
           {% for answer in entry.entry_answers.all %}
-<<<<<<< HEAD
-          <div class="qtc-grid-item order-{{answer.question.question_order}}" data-day="{{ answer.question.question_order }}">
-            {% if answer.question.question_order <= current_day %}
-              <!-- Real image for past/current days -->
-=======
           <div class="qtc-grid-item" data-day="{{ answer.question.question_order }}">
->>>>>>> b8a6869 (remove xmas stuff)
               <img 
                 src="{{answer.question.file.url }}" 
                 onclick="document.getElementById('editable-{{answer.question.question_order}}').focus()" 
