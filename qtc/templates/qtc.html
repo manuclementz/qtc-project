@@ -37,6 +37,7 @@
                 src="{{answer.question.file.url }}" 
                 onclick="document.getElementById('editable-{{answer.question.question_order}}').focus()" 
               />
+              <span class="image-number">{{answer.question.question_order}}</span>
               <div 
               id="editable-{{ answer.question.question_order }}" 
               {% if quiz.is_running %}contenteditable="true"{% endif %} spellcheck="false"

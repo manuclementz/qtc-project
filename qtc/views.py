@@ -10,7 +10,7 @@ from django.utils import timezone
 import random
 import datetime
 
-backgrounds = ["img/sf3_stage_snowy_ny.gif", "img/darkstalkers_stage.gif", "img/lastblade_snowy_stage.gif"]            
+backgrounds = ["img/bg_0.gif", "img/bg_1.gif", "img/bg_2.gif", "img/bg_3.gif", "img/bg_4.gif", "img/bg_5.gif"]            
 
 def qtc_home(request):
     current_datetime = timezone.now()
