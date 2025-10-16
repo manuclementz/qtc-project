@@ -114,5 +114,9 @@ class QuizEntryAnswer(models.Model):
     score = models.FloatField(default=0, null=True)
     question = models.ForeignKey(Question, models.CASCADE, related_name='question_answers')
     entry = models.ForeignKey(QuizEntry, models.CASCADE, related_name='entry_answers')
+
+    class Meta:
+        ordering = ['question__question_order']
+
     def __str__(self):
         return f"{self.entry.player_name} - {self.question.question_order} {self.answer_text}"
